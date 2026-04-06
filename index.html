@@ -1,332 +1,1037 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CupX UPI</title>
-
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui,-apple-system,sans-serif;
+:root {
+  --upi-orange: #FF6B00;
+  --upi-green: #008744;
+  --upi-blue: #004C97;
+  --upi-light-blue: #0072CE;
+  --upi-bg: #F5F7FA;
+  --upi-card: #FFFFFF;
+  --upi-border: #E2E8F0;
+  --upi-text: #1E293B;
+  --upi-muted: #64748B;
+  --upi-success: #16A34A;
+  --upi-danger: #DC2626;
+  --upi-warning: #D97706;
 }
 
-body{
-background:#f2f6fb;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background: var(--upi-bg);
+  color: var(--upi-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-header{
-background:white;
-padding:12px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-border-bottom:1px solid #eee;
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #003A78 0%, #004C97 50%, #0060B8 100%);
+  color: white;
+  padding: 0 16px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 14px rgba(0,60,120,0.5);
 }
 
-.header-left{
-display:flex;
-align-items:center;
-gap:10px;
+.header-left { display: flex; align-items: center; gap: 10px; }
+
+.back-btn {
+  background: rgba(255,255,255,0.18);
+  border: none;
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,0.28); }
+
+.header-brand { display: flex; align-items: center; gap: 9px; }
+.header-title { font-family: 'Rajdhani', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 1px; }
+
+.visit-btn {
+  background: var(--upi-orange);
+  color: white;
+  border: none;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background .2s;
+  font-family: 'Noto Sans', sans-serif;
+  white-space: nowrap;
+}
+.visit-btn:hover { background: #E05900; }
+
+/* SIGNIN */
+#signinScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-.header-left img{
-height:26px;
+.signin-card {
+  background: white;
+  border-radius: 18px;
+  padding: 30px 26px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,76,151,0.13);
+  border: 1px solid var(--upi-border);
 }
 
-.container{
-max-width:600px;
-margin:auto;
-padding:15px;
+.signin-logo-area { text-align: center; margin-bottom: 26px; }
+.signin-logo-area h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--upi-blue);
+  margin-top: 10px;
+}
+.signin-logo-area p { font-size: 13px; color: var(--upi-muted); margin-top: 3px; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+.form-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--upi-border);
+  border-radius: 9px;
+  font-size: 15px;
+  color: var(--upi-text);
+  background: #F8FAFC;
+  outline: none;
+  transition: border-color .2s, background .2s;
+  font-family: 'Noto Sans', sans-serif;
+}
+.form-input:focus { border-color: var(--upi-light-blue); background: white; }
+
+.pass-wrap { position: relative; }
+.pass-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--upi-light-blue);
+  font-family: 'Noto Sans', sans-serif;
 }
 
-.card{
-background:white;
-padding:15px;
-border-radius:14px;
-margin-bottom:14px;
-box-shadow:0 2px 8px rgba(0,0,0,0.05);
+.btn-primary {
+  width: 100%;
+  height: 46px;
+  background: linear-gradient(135deg, var(--upi-blue), var(--upi-light-blue));
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans', sans-serif;
+  transition: opacity .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary:hover { opacity: .9; }
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+.signup-link { text-align: center; margin-top: 16px; font-size: 13px; color: var(--upi-muted); }
+.signup-link a { color: var(--upi-light-blue); text-decoration: none; font-weight: 600; }
+
+.err-msg { color: var(--upi-danger); font-size: 13px; margin-bottom: 12px; min-height: 18px; text-align: center; }
+
+/* DASHBOARD */
+#dashScreen { display: none; }
+
+.main { flex: 1; padding: 18px 15px 50px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+/* Welcome Banner */
+.welcome-banner {
+  background: linear-gradient(135deg, #003A78 0%, #0060B8 100%);
+  border-radius: 18px;
+  padding: 22px 20px 20px;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: -25px; right: -25px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+.wb-greeting { font-size: 13px; opacity: .8; margin-bottom: 2px; }
+.wb-name { font-family: 'Rajdhani', sans-serif; font-size: 23px; font-weight: 700; margin-bottom: 5px; }
+.wb-upi { font-size: 12px; opacity: .75; margin-bottom: 16px; background: rgba(255,255,255,0.12); display: inline-block; padding: 3px 10px; border-radius: 20px; }
+.wb-row { display: flex; align-items: center; justify-content: space-between; }
+.wb-bal-label { font-size: 12px; opacity: .8; margin-bottom: 3px; }
+.wb-bal-amt { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; }
+.eye-btn {
+  background: rgba(255,255,255,0.18);
+  border: none;
+  color: white;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background .2s;
+}
+.eye-btn:hover { background: rgba(255,255,255,0.28); }
+
+/* Sections */
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--upi-muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 11px;
 }
 
-.balance-box{
-display:flex;
-justify-content:space-between;
-align-items:center;
+/* Actions Grid */
+.actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 22px; }
+
+.action-card {
+  background: white;
+  border-radius: 14px;
+  padding: 17px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  border: 1.5px solid var(--upi-border);
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  text-align: center;
+}
+.action-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,76,151,0.12); border-color: var(--upi-light-blue); }
+.action-card:active { transform: scale(.97); }
+
+.action-icon {
+  width: 46px; height: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+.ic-blue { background: #EBF5FF; }
+.ic-green { background: #ECFDF5; }
+.ic-orange { background: #FFF7ED; }
+.ic-purple { background: #F5F3FF; }
+
+.action-label { font-size: 13px; font-weight: 600; color: var(--upi-text); line-height: 1.3; }
+
+/* Passbook */
+.passbook-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--upi-border);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
 }
 
-.balance{
-font-size:26px;
-font-weight:600;
+.pb-header {
+  background: linear-gradient(135deg, #003A78, #0060B8);
+  color: white;
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pb-title { font-family: 'Rajdhani', sans-serif; font-size: 17px; font-weight: 700; }
+.pb-sub { font-size: 11px; opacity: .8; }
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 11px 15px;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--upi-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-tabs::-webkit-scrollbar { display: none; }
+
+.ftab {
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--upi-border);
+  background: white;
+  color: var(--upi-muted);
+  white-space: nowrap;
+  transition: all .15s;
+  font-family: 'Noto Sans', sans-serif;
+}
+.ftab.active { background: var(--upi-blue); color: white; border-color: var(--upi-blue); }
+
+.txn-list { }
+
+.txn-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 17px;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background .15s;
+}
+.txn-item:last-child { border-bottom: none; }
+.txn-item:hover { background: #F8FAFC; }
+
+.txn-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.ti-credit { background: #ECFDF5; }
+.ti-debit { background: #FEF2F2; }
+.ti-pending { background: #FFFBEB; }
+
+.txn-info { flex: 1; min-width: 0; }
+.txn-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txn-sub { font-size: 11px; color: var(--upi-muted); margin-top: 2px; }
+
+.txn-right { text-align: right; flex-shrink: 0; }
+.txn-amount { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; }
+.ta-credit { color: var(--upi-success); }
+.ta-debit { color: var(--upi-danger); }
+.ta-pending { color: var(--upi-warning); }
+
+.sbadge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; display: inline-block; margin-top: 2px; }
+.sb-success { background: #ECFDF5; color: var(--upi-success); }
+.sb-pending { background: #FFFBEB; color: var(--upi-warning); }
+.sb-failed { background: #FEF2F2; color: var(--upi-danger); }
+
+.txn-empty { padding: 35px 18px; text-align: center; color: var(--upi-muted); font-size: 13px; }
+.txn-loading { padding: 28px 18px; text-align: center; }
+
+.spinner {
+  display: inline-block;
+  width: 26px; height: 26px;
+  border: 3px solid #E2E8F0;
+  border-top-color: var(--upi-blue);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.logout-btn {
+  width: 100%;
+  height: 44px;
+  background: white;
+  color: var(--upi-danger);
+  border: 1.5px solid #FCA5A5;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans', sans-serif;
+  transition: background .2s;
+  margin-bottom: 10px;
+}
+.logout-btn:hover { background: #FEF2F2; }
+
+.footer-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  font-size: 11px;
+  color: var(--upi-muted);
+  text-align: center;
 }
 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
+/* MODALS */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
 }
+.modal-overlay.open { display: flex; }
 
-.btn{
-padding:14px;
-border-radius:12px;
-border:none;
-color:white;
-font-weight:500;
-cursor:pointer;
+.modal-sheet {
+  background: white;
+  border-radius: 22px 22px 0 0;
+  padding: 26px 22px 40px;
+  width: 100%;
+  max-width: 480px;
+  animation: slideUp .3s cubic-bezier(.32,.72,0,1);
+  max-height: 90vh;
+  overflow-y: auto;
 }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-.blue{
-background:linear-gradient(45deg,#2b66d9,#4b8df8);
+.modal-handle { width: 38px; height: 4px; background: #E2E8F0; border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-family: 'Rajdhani', sans-serif; font-size: 21px; font-weight: 700; color: var(--upi-blue); margin-bottom: 5px; }
+.modal-sub { font-size: 13px; color: var(--upi-muted); margin-bottom: 20px; }
+.modal-err { color: var(--upi-danger); font-size: 13px; text-align: center; min-height: 18px; margin-bottom: 12px; }
+.modal-ok { color: var(--upi-success); font-size: 14px; text-align: center; font-weight: 600; margin-bottom: 12px; }
+
+.pin-section-label { font-size: 12px; font-weight: 700; color: var(--upi-muted); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+
+.pin-row { display: flex; gap: 11px; justify-content: center; margin-bottom: 18px; }
+
+.pin-box {
+  width: 52px; height: 58px;
+  border: 2px solid var(--upi-border);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--upi-text);
+  background: #F8FAFC;
+  outline: none;
+  transition: border-color .15s;
+  font-family: 'Rajdhani', sans-serif;
+  -webkit-text-security: disc;
 }
+.pin-box:focus { border-color: var(--upi-light-blue); background: white; }
 
-.green{
-background:linear-gradient(45deg,#0aa37f,#19c5a4);
+.modal-btn-row { display: flex; gap: 10px; margin-top: 4px; }
+
+.btn-sec {
+  flex: 1;
+  height: 44px;
+  background: white;
+  color: var(--upi-text);
+  border: 1.5px solid var(--upi-border);
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Noto Sans', sans-serif;
+  transition: background .15s;
 }
+.btn-sec:hover { background: #F1F5F9; }
 
-.transaction{
-padding:12px;
-border-radius:12px;
-margin-bottom:10px;
-display:flex;
-justify-content:space-between;
+.btn-mp {
+  flex: 2;
+  height: 44px;
+  background: linear-gradient(135deg, var(--upi-blue), var(--upi-light-blue));
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans', sans-serif;
+  transition: opacity .15s;
 }
+.btn-mp:hover { opacity: .9; }
+.btn-mp:disabled { opacity: .6; cursor: not-allowed; }
 
-.credit{
-background:#e8f8ef;
-border:1px solid #8fd1a6;
+@media(max-width:380px) {
+  .pin-box { width: 44px; height: 52px; font-size: 20px; }
+  .actions-grid { gap: 9px; }
 }
-
-.debit{
-background:#fdeeee;
-border:1px solid #e9a4a4;
-}
-
-.footer{
-display:flex;
-gap:10px;
-margin-top:15px;
-}
-
-.footer button{
-flex:1;
-padding:12px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
-
-.back{
-background:#2b66d9;
-color:white;
-}
-
-.visit{
-background:#19c5a4;
-color:white;
-}
-
 </style>
-
 </head>
-
 <body>
 
-<header>
-
-<div class="header-left">
-<button onclick="goBack()">←</button>
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/55/BHIM_UPI_Logo.png">
-
-<div>CUPX UPI</div>
-
-</div>
-
-<div id="user"></div>
-
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
+    <div class="header-brand">
+      <!-- UPI Logo SVG (tricolor >>) -->
+      <svg height="30" viewBox="0 0 110 38" xmlns="http://www.w3.org/2000/svg">
+        <rect width="110" height="38" fill="white" rx="5"/>
+        <text x="7" y="27" font-family="Arial Black,sans-serif" font-size="20" font-weight="900" fill="#004C97">UPI</text>
+        <path d="M68 8 L80 19 L68 30" stroke="#FF9933" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M76 8 L88 19 L76 30" stroke="#AAAAAA" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84 8 L96 19 L84 30" stroke="#138808" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="header-title">CUPX UPI</span>
+    </div>
+  </div>
+  <a href="https://cupx.in" class="visit-btn" target="_blank">CupX &#8599;</a>
 </header>
 
-<div class="container">
+<!-- SIGNIN SCREEN -->
+<div id="signinScreen">
+  <div class="signin-card">
+    <div class="signin-logo-area">
+      <svg width="140" height="48" viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+        <rect width="140" height="48" fill="#EEF4FF" rx="8"/>
+        <text x="8" y="35" font-family="Arial Black,sans-serif" font-size="28" font-weight="900" fill="#004C97">UPI</text>
+        <path d="M85 10 L104 24 L85 38" stroke="#FF9933" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M96 10 L115 24 L96 38" stroke="#CCCCCC" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M107 10 L126 24 L107 38" stroke="#138808" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2>CupX UPI</h2>
+      <p>Sign in with your CupX account</p>
+    </div>
 
-<h2 id="hello">Hello</h2>
+    <div id="siErr" class="err-msg"></div>
 
-<div class="card">
+    <div class="form-group">
+      <label>Username</label>
+      <input class="form-input" type="text" id="siUser" placeholder="your_username" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input class="form-input" type="password" id="siPass" placeholder="••••••••" autocomplete="current-password"/>
+        <button class="pass-toggle" type="button" onclick="togglePw('siPass',this)">Show</button>
+      </div>
+    </div>
 
-<div class="balance-box">
+    <button class="btn-primary" id="siBtn" onclick="doSignin()">
+      <span id="siBtnTxt">Sign In</span>
+    </button>
 
-<div>
+    <div class="signup-link">
+      New to CupX? <a href="https://auth.cupx.in?from=upi">Create Account</a>
+    </div>
 
-<div>Current Account</div>
-
-<div class="balance" id="balance">XXXX.XX</div>
-
+    <div class="footer-badge">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#004C97" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#138808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Secured by NPCI &bull; CupX Corporation
+    </div>
+  </div>
 </div>
 
-<button onclick="toggleBalance()">View Balance</button>
+<!-- DASHBOARD -->
+<div id="dashScreen">
+  <div class="main">
 
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="wb-greeting">Welcome back,</div>
+      <div class="wb-name" id="wbName">—</div>
+      <div class="wb-upi" id="wbUpi">Loading…</div>
+      <div class="wb-row">
+        <div>
+          <div class="wb-bal-label">Account Balance</div>
+          <div class="wb-bal-amt" id="balDisplay">₹ ••••</div>
+        </div>
+        <button class="eye-btn" onclick="toggleBal()" id="eyeBtn">👁</button>
+      </div>
+    </div>
+
+    <!-- Manage UPI -->
+    <div class="section-title">Manage UPI</div>
+    <div class="actions-grid">
+      <div class="action-card" onclick="openPinModal()">
+        <div class="action-icon ic-blue">🔑</div>
+        <div class="action-label" id="pinCardLbl">Set UPI PIN</div>
+      </div>
+      <div class="action-card" onclick="openCheckBal()">
+        <div class="action-icon ic-green">🏦</div>
+        <div class="action-label">Check Balance</div>
+      </div>
+      <div class="action-card" onclick="window.location.href='https://pay.cupx.in'">
+        <div class="action-icon ic-orange">💸</div>
+        <div class="action-label">Send / Pay</div>
+      </div>
+      <div class="action-card" onclick="window.location.href='https://pay.cupx.in'">
+        <div class="action-icon ic-purple">📲</div>
+        <div class="action-label">Request Money</div>
+      </div>
+    </div>
+
+    <!-- Mini Passbook -->
+    <div class="section-title">Mini Passbook</div>
+    <div class="passbook-card">
+      <div class="pb-header">
+        <div>
+          <div class="pb-title">📒 Transaction History</div>
+          <div class="pb-sub">Last 50 transactions</div>
+        </div>
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <rect width="34" height="34" rx="8" fill="rgba(255,255,255,0.15)"/>
+          <path d="M9 17h16M9 11h16M9 23h9" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="ftab active" onclick="filterTxn('all',this)">All</button>
+        <button class="ftab" onclick="filterTxn('credit',this)">Received</button>
+        <button class="ftab" onclick="filterTxn('debit',this)">Sent</button>
+        <button class="ftab" onclick="filterTxn('pending',this)">Pending</button>
+      </div>
+
+      <div class="txn-list" id="txnList">
+        <div class="txn-loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">⎋ &nbsp;Sign Out</button>
+
+    <div class="footer-badge">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#004C97" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#138808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      CupX UPI &bull; Powered by NPCI Infrastructure &bull; 2026
+    </div>
+  </div>
 </div>
 
+<!-- PIN MODAL -->
+<div class="modal-overlay" id="pinModal" onclick="closeModal('pinModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="pinMTitle">Set UPI PIN</div>
+    <div class="modal-sub" id="pinMSub">Choose a 4-digit PIN to secure your transactions</div>
+    <div id="pinErr" class="modal-err"></div>
+
+    <!-- SET form (no existing pin) -->
+    <div id="formSet">
+      <div class="pin-section-label">New PIN</div>
+      <div class="pin-row" id="rowNP">
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="np0"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="np1"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="np2"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="np3"/>
+      </div>
+      <div class="pin-section-label">Confirm PIN</div>
+      <div class="pin-row">
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cp0"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cp1"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cp2"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cp3"/>
+      </div>
+    </div>
+
+    <!-- CHANGE form (has existing pin) -->
+    <div id="formChange" style="display:none">
+      <div class="pin-section-label">Current PIN</div>
+      <div class="pin-row">
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="op0"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="op1"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="op2"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="op3"/>
+      </div>
+      <div class="pin-section-label">New PIN</div>
+      <div class="pin-row">
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cn0"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cn1"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cn2"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cn3"/>
+      </div>
+      <div class="pin-section-label">Confirm New PIN</div>
+      <div class="pin-row">
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cc0"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cc1"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cc2"/>
+        <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="cc3"/>
+      </div>
+    </div>
+
+    <div class="modal-btn-row">
+      <button class="btn-sec" onclick="closeModal('pinModal')">Cancel</button>
+      <button class="btn-mp" id="pinSubmitBtn" onclick="submitPin()">Set PIN</button>
+    </div>
+  </div>
 </div>
 
-<h3>Manage UPI</h3>
-
-<div class="grid">
-
-<button class="btn blue" onclick="pinAction()" id="pinBtn">
-Set UPI PIN
-</button>
-
-<button class="btn green" onclick="toggleBalance()">
-Check Balance
-</button>
-
-</div>
-
-<h3 style="margin-top:15px;">Transaction History</h3>
-
-<div id="transactions"></div>
-
-<div class="footer">
-
-<button class="back" onclick="goBack()">Back</button>
-
-<button class="visit" onclick="visitCupx()">Visit CupX</button>
-
-</div>
-
+<!-- CHECK BALANCE MODAL -->
+<div class="modal-overlay" id="balModal" onclick="closeModal('balModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Check Balance</div>
+    <div class="modal-sub">Enter your UPI PIN to verify</div>
+    <div id="balErr" class="modal-err"></div>
+    <div id="balOk" class="modal-ok"></div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp0"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp1"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp2"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp3"/>
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn-sec" onclick="closeModal('balModal')">Close</button>
+      <button class="btn-mp" id="balBtn" onclick="checkBalance()">View Balance</button>
+    </div>
+  </div>
 </div>
 
 <script>
+// ── CONFIG — REPLACE THESE ──
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-const supabase = window.supabase.createClient(
-"https://astnfrwbebzxcxlltpkn.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4"
-)
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let user
-let showBalance=false
+let currentUser = null;
+let balVisible = false;
+let txnAll = [];
+let hasPin = false;
+let activeFilter = 'all';
 
-async function init(){
+// ── BOOT ──
+(function init() {
+  const saved = localStorage.getItem('cupx_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      showDash();
+    } catch(e) {
+      showSignin();
+    }
+  } else {
+    showSignin();
+  }
+})();
 
-const session = JSON.parse(localStorage.getItem("cupx_session"))
-
-if(!session){
-location.href="https://auth.cupx.in"
-return
+function showSignin() {
+  document.getElementById('signinScreen').style.display = 'flex';
+  document.getElementById('dashScreen').style.display = 'none';
 }
 
-const { data } = await supabase
-.from("users")
-.select("*")
-.eq("username",session.username)
-.single()
-
-user=data
-
-document.getElementById("user").innerText=user.username
-document.getElementById("hello").innerText="Hello, "+user.username+"!"
-
-if(user.upi_pin){
-document.getElementById("pinBtn").innerText="Change UPI PIN"
+// ── BACK BUTTON ──
+function goBack() {
+  if (document.referrer) { history.back(); }
+  else { window.location.href = 'https://cupx.in'; }
 }
 
-loadTransactions()
-
+// ── TOGGLE PASSWORD ──
+function togglePw(id, btn) {
+  const el = document.getElementById(id);
+  const hidden = el.type === 'password';
+  el.type = hidden ? 'text' : 'password';
+  btn.textContent = hidden ? 'Hide' : 'Show';
 }
 
-function toggleBalance(){
+// ── SIGN IN ──
+document.getElementById('siUser').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('siPass').focus(); });
+document.getElementById('siPass').addEventListener('keydown', e => { if (e.key==='Enter') doSignin(); });
 
-showBalance=!showBalance
+async function doSignin() {
+  const u = document.getElementById('siUser').value.trim().toLowerCase();
+  const p = document.getElementById('siPass').value;
+  const errEl = document.getElementById('siErr');
+  const btn = document.getElementById('siBtn');
+  const btnTxt = document.getElementById('siBtnTxt');
 
-if(showBalance){
-document.getElementById("balance").innerText="₹"+(user.balance||0)
-}else{
-document.getElementById("balance").innerText="XXXX.XX"
+  errEl.textContent = '';
+  if (!u || !p) { errEl.textContent = 'Please fill in all fields'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2.5px;border-color:#fff3;border-top-color:#fff"></div>';
+
+  const { data, error } = await db.from('users').select('*').eq('username', u).eq('password', p).single();
+
+  btn.disabled = false;
+  btn.innerHTML = '<span id="siBtnTxt">Sign In</span>';
+
+  if (error || !data) {
+    errEl.textContent = 'Invalid username or password';
+    return;
+  }
+
+  localStorage.setItem('cupx_user', JSON.stringify(data));
+  currentUser = data;
+  showDash();
 }
 
+// ── SHOW DASHBOARD ──
+async function showDash() {
+  document.getElementById('signinScreen').style.display = 'none';
+  document.getElementById('dashScreen').style.display = 'block';
+
+  // Refresh from DB
+  const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
+  if (data) { currentUser = data; localStorage.setItem('cupx_user', JSON.stringify(data)); }
+
+  const name = currentUser.full_name || currentUser.username;
+  document.getElementById('wbName').textContent = name;
+  document.getElementById('wbUpi').textContent = 'UPI ID: ' + currentUser.upi_id;
+
+  hasPin = !!(currentUser.upi_pin);
+  document.getElementById('pinCardLbl').textContent = hasPin ? 'Change UPI PIN' : 'Set UPI PIN';
+
+  balVisible = false;
+  document.getElementById('balDisplay').textContent = '₹ ••••';
+  document.getElementById('eyeBtn').textContent = '👁';
+
+  loadTxn();
 }
 
-async function pinAction(){
-
-let pin=prompt("Enter 4 digit UPI PIN")
-
-if(!pin || pin.length!=4){
-alert("Invalid PIN")
-return
+// ── BALANCE ──
+function toggleBal() {
+  balVisible = !balVisible;
+  if (balVisible) {
+    const amt = parseFloat(currentUser.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    document.getElementById('balDisplay').textContent = '₹ ' + amt;
+    document.getElementById('eyeBtn').textContent = '🙈';
+  } else {
+    document.getElementById('balDisplay').textContent = '₹ ••••';
+    document.getElementById('eyeBtn').textContent = '👁';
+  }
 }
 
-await supabase
-.from("users")
-.update({
-upi_pin:pin
-})
-.eq("id",user.id)
+// ── TRANSACTIONS ──
+async function loadTxn() {
+  document.getElementById('txnList').innerHTML = '<div class="txn-loading"><div class="spinner"></div></div>';
 
-alert("UPI PIN Saved")
+  const { data, error } = await db
+    .from('transactions')
+    .select('*')
+    .or(`from_user.eq.${currentUser.username},to_user.eq.${currentUser.username}`)
+    .order('created_at', { ascending: false })
+    .limit(50);
 
+  if (error || !data) {
+    document.getElementById('txnList').innerHTML = '<div class="txn-empty">⚠ Could not load transactions</div>';
+    return;
+  }
+
+  txnAll = data;
+  renderTxn();
 }
 
-async function loadTransactions(){
-
-const { data } = await supabase
-.from("transactions")
-.select("*")
-.or(`from_user.eq.${user.username},to_user.eq.${user.username}`)
-.order("created_at",{ascending:false})
-.limit(10)
-
-const container=document.getElementById("transactions")
-
-data.forEach(t=>{
-
-let type = t.to_user==user.username ? "credit":"debit"
-
-const div=document.createElement("div")
-
-div.className="transaction "+type
-
-div.innerHTML=`
-
-<div>
-
-<div>${t.type || "Payment"}</div>
-
-<div>${new Date(t.created_at).toLocaleString()}</div>
-
-</div>
-
-<div>
-
-${type=="credit" ? "+" : "-"} ₹${t.amount}
-
-</div>
-
-`
-
-container.appendChild(div)
-
-})
-
+function filterTxn(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTxn();
 }
 
-function goBack(){
-window.history.back()
+function renderTxn() {
+  const u = currentUser.username;
+  let list = txnAll;
+
+  if (activeFilter === 'credit') list = txnAll.filter(t => t.to_user === u && t.status !== 'pending');
+  else if (activeFilter === 'debit') list = txnAll.filter(t => t.from_user === u && t.status !== 'pending');
+  else if (activeFilter === 'pending') list = txnAll.filter(t => t.status === 'pending');
+
+  if (!list.length) {
+    document.getElementById('txnList').innerHTML = '<div class="txn-empty">No transactions found</div>';
+    return;
+  }
+
+  const html = list.map(t => {
+    const isCredit = t.to_user === u;
+    const isPending = t.status === 'pending';
+    const other = isCredit ? (t.from_user || '—') : (t.to_user || '—');
+    const amt = parseFloat(t.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    const dt = t.created_at ? new Date(t.created_at).toLocaleString('en-IN', { day:'numeric', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+
+    let iconCls, icon, amtCls, amtSign;
+    if (isPending)       { iconCls='ti-pending'; icon='⏳'; amtCls='ta-pending'; amtSign=''; }
+    else if (isCredit)   { iconCls='ti-credit';  icon='↓';  amtCls='ta-credit';  amtSign='+'; }
+    else                 { iconCls='ti-debit';   icon='↑';  amtCls='ta-debit';   amtSign='-'; }
+
+    const label = isPending ? 'From ' + other : (isCredit ? 'From ' + other : 'To ' + other);
+    const typeLabel = t.type ? t.type.charAt(0).toUpperCase()+t.type.slice(1) : (isCredit?'Received':'Sent');
+    const statusCls = t.status === 'success' ? 'sb-success' : t.status === 'pending' ? 'sb-pending' : 'sb-failed';
+
+    return `<div class="txn-item">
+      <div class="txn-icon ${iconCls}">${icon}</div>
+      <div class="txn-info">
+        <div class="txn-title">${label}</div>
+        <div class="txn-sub">${dt} &middot; ${typeLabel}</div>
+      </div>
+      <div class="txn-right">
+        <div class="txn-amount ${amtCls}">${amtSign}₹${amt}</div>
+        <span class="sbadge ${statusCls}">${t.status||'—'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('txnList').innerHTML = html;
 }
 
-function visitCupx(){
-location.href="https://cupx.in"
+// ── MODALS ──
+function closeModal(id, e) {
+  if (!e || e.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('open');
+    clearAllPins();
+  }
 }
 
-init()
+function clearAllPins() {
+  ['np','cp','op','cn','cc','bp'].forEach(p => {
+    for (let i=0;i<4;i++) { const el=document.getElementById(p+i); if(el) el.value=''; }
+  });
+  const pe = document.getElementById('pinErr'); if(pe) { pe.textContent=''; pe.style.color='var(--upi-danger)'; }
+  const be = document.getElementById('balErr'); if(be) be.textContent='';
+  const bo = document.getElementById('balOk'); if(bo) bo.textContent='';
+}
 
+function getPin(prefix) {
+  return [0,1,2,3].map(i => { const el=document.getElementById(prefix+i); return el?el.value:''; }).join('');
+}
+
+// Setup auto-advance
+['np','cp','op','cn','cc','bp'].forEach(prefix => {
+  for (let i=0;i<4;i++) {
+    const el = document.getElementById(prefix+i);
+    if (!el) continue;
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/[^0-9]/g,'').slice(-1);
+      if (el.value && i<3) document.getElementById(prefix+(i+1)).focus();
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key==='Backspace' && !el.value && i>0) document.getElementById(prefix+(i-1)).focus();
+    });
+  }
+});
+
+// ── PIN MODAL ──
+function openPinModal() {
+  document.getElementById('pinMTitle').textContent = hasPin ? 'Change UPI PIN' : 'Set UPI PIN';
+  document.getElementById('pinMSub').textContent = hasPin ? 'Enter your current PIN then choose a new one' : 'Choose a secure 4-digit PIN';
+  document.getElementById('pinSubmitBtn').textContent = hasPin ? 'Update PIN' : 'Set PIN';
+  document.getElementById('formSet').style.display = hasPin ? 'none' : 'block';
+  document.getElementById('formChange').style.display = hasPin ? 'block' : 'none';
+  clearAllPins();
+  document.getElementById('pinModal').classList.add('open');
+  setTimeout(() => {
+    const first = document.getElementById(hasPin ? 'op0' : 'np0');
+    if (first) first.focus();
+  }, 320);
+}
+
+async function submitPin() {
+  const btn = document.getElementById('pinSubmitBtn');
+  const errEl = document.getElementById('pinErr');
+  errEl.textContent = '';
+  errEl.style.color = 'var(--upi-danger)';
+
+  let newPin;
+  if (!hasPin) {
+    const np = getPin('np'), cp = getPin('cp');
+    if (np.length < 4) { errEl.textContent = 'Please enter a complete 4-digit PIN'; return; }
+    if (np !== cp) { errEl.textContent = 'PINs do not match'; return; }
+    newPin = np;
+  } else {
+    const op = getPin('op'), cn = getPin('cn'), cc = getPin('cc');
+    if (op.length < 4) { errEl.textContent = 'Enter your current PIN'; return; }
+    if (cn.length < 4) { errEl.textContent = 'Enter a complete new PIN'; return; }
+    if (cn !== cc) { errEl.textContent = 'New PINs do not match'; return; }
+    if (op !== currentUser.upi_pin) { errEl.textContent = 'Current PIN is incorrect'; return; }
+    newPin = cn;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const { data, error } = await db
+    .from('users')
+    .update({ upi_pin: newPin, upi_pin_updated_at: new Date().toISOString() })
+    .eq('id', currentUser.id)
+    .select()
+    .single();
+
+  btn.disabled = false;
+  btn.textContent = hasPin ? 'Update PIN' : 'Set PIN';
+
+  if (error) { errEl.textContent = 'Error: ' + error.message; return; }
+
+  currentUser = data;
+  localStorage.setItem('cupx_user', JSON.stringify(data));
+  hasPin = true;
+  document.getElementById('pinCardLbl').textContent = 'Change UPI PIN';
+
+  errEl.style.color = 'var(--upi-success)';
+  errEl.textContent = '✓ PIN ' + (hasPin ? 'updated' : 'set') + ' successfully!';
+  setTimeout(() => { document.getElementById('pinModal').classList.remove('open'); clearAllPins(); }, 1800);
+}
+
+// ── CHECK BALANCE MODAL ──
+function openCheckBal() {
+  if (!hasPin) { alert('Please set your UPI PIN first.'); openPinModal(); return; }
+  clearAllPins();
+  document.getElementById('balModal').classList.add('open');
+  setTimeout(() => { const el=document.getElementById('bp0'); if(el) el.focus(); }, 320);
+}
+
+async function checkBalance() {
+  const pin = getPin('bp');
+  const errEl = document.getElementById('balErr');
+  const okEl = document.getElementById('balOk');
+  const btn = document.getElementById('balBtn');
+
+  errEl.textContent = ''; okEl.textContent = '';
+  if (pin.length < 4) { errEl.textContent = 'Enter your 4-digit UPI PIN'; return; }
+
+  btn.disabled = true; btn.textContent = 'Verifying…';
+
+  const { data } = await db.from('users').select('balance,upi_pin').eq('id', currentUser.id).single();
+
+  btn.disabled = false; btn.textContent = 'View Balance';
+
+  if (!data) { errEl.textContent = 'Could not fetch balance'; return; }
+  if (pin !== data.upi_pin) { errEl.textContent = 'Incorrect UPI PIN'; return; }
+
+  currentUser.balance = data.balance;
+  localStorage.setItem('cupx_user', JSON.stringify(currentUser));
+
+  const amt = parseFloat(data.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+  okEl.textContent = '✓ Available Balance: ₹' + amt;
+
+  // Also reveal on banner
+  balVisible = true;
+  document.getElementById('balDisplay').textContent = '₹ ' + amt;
+  document.getElementById('eyeBtn').textContent = '🙈';
+}
+
+// ── LOGOUT ──
+function logout() {
+  if (confirm('Sign out of CupX UPI?')) {
+    localStorage.removeItem('cupx_user');
+    currentUser = null;
+    txnAll = [];
+    showSignin();
+  }
+}
 </script>
-
 </body>
-
 </html>
