@@ -1,73 +1,85 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CupX UPI</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CupX UPI</title>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<style>
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:system-ui,-apple-system,sans-serif;
+font-family: system-ui,-apple-system,sans-serif;
 }
 
 body{
-background:#f4f6fb;
+background:#f6f7fb;
 color:#111;
 }
 
-/* Header */
-
 header{
-background:#00529b;
+background:#003366;
 color:white;
 padding:16px;
 display:flex;
-justify-content:space-between;
 align-items:center;
-font-weight:600;
+gap:10px;
 }
 
-/* Container */
+header img{
+height:28px;
+}
 
 .container{
 max-width:700px;
 margin:auto;
-padding:16px;
+padding:15px;
 }
-
-/* Cards */
 
 .card{
 background:white;
+border-radius:12px;
 padding:16px;
-border-radius:14px;
+margin-bottom:14px;
 box-shadow:0 2px 8px rgba(0,0,0,0.05);
-margin-bottom:16px;
 }
-
-/* Balance */
 
 .balance{
-font-size:32px;
+font-size:28px;
 font-weight:600;
-margin-top:6px;
-color:#00529b;
+margin-top:5px;
 }
 
-/* Buttons */
+.upi{
+font-size:18px;
+font-weight:600;
+}
+
+.small{
+font-size:13px;
+color:#666;
+}
 
 button{
-background:#f37021;
-color:white;
-border:none;
+width:100%;
 padding:12px;
-border-radius:10px;
+border:none;
+border-radius:8px;
+background:#003366;
+color:white;
+font-size:14px;
 cursor:pointer;
-font-weight:600;
 }
 
 button.secondary{
-background:#00529b;
+background:#e9eefc;
+color:#003366;
 }
 
 .grid{
@@ -76,50 +88,24 @@ grid-template-columns:1fr 1fr;
 gap:10px;
 }
 
-/* Inputs */
-
 input{
 width:100%;
 padding:12px;
-border-radius:10px;
+border-radius:8px;
 border:1px solid #ddd;
 margin-top:8px;
 }
 
-/* Small */
-
-.small{
-font-size:13px;
-color:#666;
-}
-
-/* UPI */
-
-.upi{
-font-size:18px;
-font-weight:600;
-}
-
-/* Transactions */
-
 .transaction{
 display:flex;
 justify-content:space-between;
-padding:12px 0;
+padding:10px 0;
 border-bottom:1px solid #eee;
 }
 
-.credit{
-color:#16a34a;
+.amount{
 font-weight:600;
 }
-
-.debit{
-color:#dc2626;
-font-weight:600;
-}
-
-/* Footer */
 
 .footer{
 text-align:center;
@@ -128,78 +114,79 @@ color:#777;
 margin-top:20px;
 }
 
-.logo{
-height:28px;
-}
+</style>
 
-</style></head><body><header>
-<div style="display:flex;gap:10px;align-items:center">
-<img 
-src="https://www.bhimupi.org.in/images/bhim_logo.png"
-class="logo"
-/>
-<span>CupX UPI</span>
-</div><div id="username"></div>
-</header><div class="container"><div class="card">
-<div>Available Balance</div>
+</head>
+
+<body>
+
+<header>
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/55/BHIM_UPI_Logo.png">
+<div>CupX UPI</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+<div>Balance</div>
 <div class="balance" id="balance">₹0</div>
-</div><div class="card">
-<div class="upi" id="upiId"></div>
+</div>
+
+<div class="card">
+<div class="upi" id="upiId">loading...</div>
 <div class="small">Your UPI ID</div>
-</div><div class="card grid">
-<button onclick="showSetPin()">Set / Update PIN</button>
+</div>
+
+<div class="card grid">
+<button onclick="showPin()">Set / Update PIN</button>
 <button class="secondary" onclick="logout()">Logout</button>
-</div><div class="card" id="pinBox" style="display:none"><div>Set UPI PIN</div><input 
-type="password" 
-id="pin" 
-placeholder="Enter 4 digit PIN"
-/>
+</div>
 
-<button onclick="savePin()">Save PIN</button>
+<div class="card" id="pinBox" style="display:none">
+<div>UPI PIN</div>
+<input type="password" id="pin" placeholder="Enter 4 digit pin">
+<button onclick="savePin()">Save</button>
+</div>
 
-</div><div class="card"><div style="font-weight:600;margin-bottom:10px">
-Mini Passbook
-</div><div id="transactions">
-Loading...
-</div></div><div class="footer">
+<div class="card">
+<div>Mini Passbook</div>
+<div id="transactions"></div>
+</div>
+
+<div class="footer">
 NPCI Inspired • CupX Payments
-</div></div><script>
+</div>
+
+</div>
+
+<script>
 
 const supabase = window.supabase.createClient(
 "https://astnfrwbebzxcxlltpkn.supabase.co",
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4"
 )
 
-let userData
+let user
 
 async function init(){
 
-const session = localStorage.getItem("cupx_session")
+const session = JSON.parse(localStorage.getItem("cupx_session"))
 
 if(!session){
-window.location.href="https://auth.cupx.in"
+location.href="https://auth.cupx.in"
 return
 }
 
-const parsed = JSON.parse(session)
-
-const { data, error } = await supabase
+const { data } = await supabase
 .from("users")
 .select("*")
-.eq("username", parsed.username)
+.eq("username",session.username)
 .single()
 
-if(error || !data){
-window.location.href="https://auth.cupx.in"
-return
-}
+user=data
 
-userData=data
-
-document.getElementById("username").innerText=data.username
-document.getElementById("balance").innerText="₹"+(data.balance || 0)
-document.getElementById("upiId").innerText=
-(data.upi_id || data.username+"@cupx")
+document.getElementById("balance").innerText="₹"+(user.balance||0)
+document.getElementById("upiId").innerText=(user.upi_id || user.username+"@cupx")
 
 loadTransactions()
 
@@ -210,46 +197,41 @@ async function loadTransactions(){
 const { data } = await supabase
 .from("transactions")
 .select("*")
-.or(`from_user.eq.${userData.username},to_user.eq.${userData.username}`)
+.or(`from_user.eq.${user.username},to_user.eq.${user.username}`)
 .order("created_at",{ascending:false})
 .limit(10)
 
-let html=""
+const container=document.getElementById("transactions")
 
-if(!data || data.length===0){
-html="No transactions yet"
-}
+container.innerHTML=""
 
-data.forEach(tx=>{
+data.forEach(t=>{
 
-const credit = tx.to_user===userData.username
+const div=document.createElement("div")
+div.className="transaction"
 
-html+=`
+let sign = t.to_user==user.username ? "+" : "-"
 
-<div class="transaction">
+div.innerHTML=`
 
 <div>
-<div>${credit?"Received":"Sent"}</div>
-<div class="small">
-${new Date(tx.created_at).toLocaleString()}
-</div>
-</div>
 
-<div class="${credit?"credit":"debit"}">
-${credit?"+":"-"} ₹${tx.amount}
-</div>
+<div>${t.type || "Payment"}</div>
+<div class="small">${new Date(t.created_at).toLocaleString()}</div>
 
 </div>
+
+<div class="amount">${sign} ₹${t.amount}</div>
 
 `
 
-})
+container.appendChild(div)
 
-document.getElementById("transactions").innerHTML=html
+})
 
 }
 
-function showSetPin(){
+function showPin(){
 document.getElementById("pinBox").style.display="block"
 }
 
@@ -268,23 +250,21 @@ await supabase
 upi_pin:pin,
 upi_pin_updated_at:new Date()
 })
-.eq("id",userData.id)
+.eq("id",user.id)
 
-alert("PIN updated")
-
-location.reload()
+alert("PIN Updated")
 
 }
 
 function logout(){
-
 localStorage.removeItem("cupx_session")
-
-window.location.href="https://auth.cupx.in"
-
+location.href="https://auth.cupx.in"
 }
 
 init()
 
-</script></body>
-        </html>
+</script>
+
+</body>
+
+</html>
