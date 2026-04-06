@@ -1,256 +1,255 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPI | CupX Corporation</title>
-    <style>
-        :root {
-            --npci-blue: #242D7A;
-            --upi-orange: #EF7102;
-            --upi-green: #018136;
-            --bg-light: #f4f7fa;
-            --text-dark: #333333;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CupX UPI</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:system-ui,-apple-system,sans-serif;
+}
 
-        body {
-            background-color: white;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
+body{
+background:#f5f7fb;
+color:#111;
+}
 
-        /* Top Bar */
-        .top-nav {
-            background: var(--npci-blue);
-            height: 5px;
-            width: 100%;
-        }
+header{
+background:#0b5ed7;
+color:white;
+padding:18px;
+font-size:18px;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-        header {
-            padding: 15px 10%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+.container{
+padding:16px;
+max-width:700px;
+margin:auto;
+}
 
-        .logo-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.card{
+background:white;
+padding:18px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+margin-bottom:16px;
+}
 
-        .upi-brand {
-            font-size: 28px;
-            font-weight: 800;
-            font-style: italic;
-            color: var(--npci-blue);
-            letter-spacing: -1px;
-        }
+.balance{
+font-size:32px;
+font-weight:600;
+margin-top:8px;
+}
 
-        .upi-brand span {
-            color: var(--upi-orange);
-        }
+button{
+background:#0b5ed7;
+color:white;
+border:none;
+padding:12px;
+border-radius:8px;
+cursor:pointer;
+width:100%;
+font-size:15px;
+}
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
-            padding: 80px 10%;
-            text-align: center;
-            border-bottom: 1px solid #e1e8ed;
-        }
+button.secondary{
+background:#e9eefc;
+color:#0b5ed7;
+}
 
-        .upi-symbol {
-            width: 120px;
-            margin-bottom: 30px;
-        }
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
 
-        h1 {
-            font-size: 48px;
-            color: var(--npci-blue);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+margin-top:8px;
+}
 
-        .subtitle {
-            font-size: 20px;
-            color: #555;
-            margin-bottom: 40px;
-        }
+.small{
+font-size:13px;
+color:#666;
+}
 
-        /* Coming Soon Card */
-        .card {
-            background: white;
-            max-width: 600px;
-            margin: -60px auto 60px;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 4px solid var(--upi-green);
-        }
+.upi{
+font-size:18px;
+font-weight:600;
+}
 
-        .status-pill {
-            display: inline-block;
-            background: rgba(1, 129, 54, 0.1);
-            color: var(--upi-green);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
+.transaction{
+padding:12px 0;
+border-bottom:1px solid #eee;
+display:flex;
+justify-content:space-between;
+}
 
-        .fast-forward {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-bottom: 20px;
-        }
+.credit{
+color:#16a34a;
+font-weight:600;
+}
 
-        .arrow {
-            width: 20px;
-            height: 20px;
-            transform: skewX(-20deg);
-        }
+.debit{
+color:#dc2626;
+font-weight:600;
+}
 
-        .orange { background: var(--upi-orange); }
-        .green { background: var(--upi-green); }
+.footer{
+text-align:center;
+font-size:12px;
+color:#888;
+margin-top:20px;
+}
 
-        .btn-main {
-            background: var(--npci-blue);
-            color: white;
-            padding: 12px 35px;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
+</style></head><body><header>
+<span>CupX UPI</span>
+<span id="username"></span>
+</header><div class="container"><div class="card">
+<div>Balance</div>
+<div class="balance" id="balance">₹0</div>
+</div><div class="card">
+<div class="upi" id="upiId">Loading...</div>
+<div class="small">Your UPI ID</div>
+</div><div class="card grid">
+<button onclick="showSetPin()">Set / Update UPI PIN</button>
+<button class="secondary" onclick="logout()">Logout</button>
+</div><div class="card" id="pinBox" style="display:none">
+<div>Set UPI PIN</div>
+<input type="password" id="pin" placeholder="Enter 4 digit PIN">
+<button onclick="savePin()">Save PIN</button>
+</div><div class="card">
+<div>Account Info</div>
+<div class="small" id="name"></div>
+<div class="small" id="email"></div>
+</div><div class="card">
+<div style="font-weight:600;margin-bottom:10px">
+Mini Passbook
+</div><div id="transactions">
+Loading...
+</div></div><div class="footer">
+NPCI Inspired • CupX Payments
+</div></div><script>
 
-        .btn-main:hover {
-            background: #1a225c;
-            transform: translateY(-2px);
-        }
+const supabase = window.supabase.createClient(
+"https://astnfrwbebzxcxlltpkn.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4"
+)
 
-        /* Features Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            padding: 40px 10%;
-            background: white;
-        }
+let userData
 
-        .f-item {
-            text-align: center;
-            padding: 20px;
-        }
+async function init(){
 
-        .f-item h3 {
-            color: var(--npci-blue);
-            margin-bottom: 10px;
-        }
+const session = JSON.parse(localStorage.getItem("cupx_session"))
 
-        /* Footer */
-        footer {
-            background: #222;
-            color: #ccc;
-            padding: 40px 10%;
-            text-align: center;
-            font-size: 14px;
-        }
+if(!session){
+location.href="https://auth.cupx.in"
+return
+}
 
-        .footer-links {
-            margin-bottom: 20px;
-        }
+const { data } = await supabase
+.from("users")
+.select("*")
+.eq("username", session.username)
+.single()
 
-        .footer-links a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-        }
+if(!data){
+location.href="https://auth.cupx.in"
+return
+}
 
-        .highlight-text {
-            color: var(--upi-orange);
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
+userData = data
 
-    <div class="top-nav"></div>
-    
-    <header>
-        <div class="logo-box">
-            <div class="upi-brand">U<span>PI</span></div>
-        </div>
-        <div style="font-size: 12px; color: #888; text-align: right;">
-            Powered by <br> <strong>CupX Corporation</strong>
-        </div>
-    </header>
+document.getElementById("username").innerText=data.username
+document.getElementById("balance").innerText="₹"+data.balance
+document.getElementById("upiId").innerText=data.upi_id || data.username+"@cupx"
+document.getElementById("name").innerText=data.full_name || ""
+document.getElementById("email").innerText=data.email || ""
 
-    <section class="hero">
-        <div class="fast-forward">
-            <div class="arrow orange"></div>
-            <div class="arrow orange"></div>
-            <div class="arrow green"></div>
-        </div>
-        <h1>Unified Payments Interface</h1>
-        <p class="subtitle">Secure. Instant. Imaginary.</p>
-    </section>
+loadTransactions()
 
-    <main>
-        <div class="card">
-            <span class="status-pill">System Deployment: In Progress</span>
-            <h2 style="margin-bottom: 15px;">A New Way to Pay (Mock)</h2>
-            <p style="margin-bottom: 30px; color: #666;">
-                We are building the backbone of the CupX economy. Soon, you'll be able to link your 
-                imaginary bank accounts and make lightning-fast payments across all our subdomains.
-            </p>
-            <a href="https://cupx.in" class="btn-main">Return to CupX Home</a>
-        </div>
+}
 
-        <section class="features">
-            <div class="f-item">
-                <h3>Scan & Pay</h3>
-                <p>Support for mock QR codes across the CupX ecosystem.</p>
-            </div>
-            <div class="f-item">
-                <h3>24/7 Sandbox</h3>
-                <p>Always up, always ready for your testing and development.</p>
-            </div>
-            <div class="f-item">
-                <h3>Zero Cost</h3>
-                <p>No real money involved—perfect for your project simulation.</p>
-            </div>
-        </section>
-    </main>
+async function loadTransactions(){
 
-    <footer>
-        <div class="footer-links">
-            <a href="https://cupx.in/about">About Us</a> | 
-            <a href="https://cupx.in/contact">Support</a> | 
-            <a href="#">Privacy Policy</a>
-        </div>
-        <p>© 2026 <span class="highlight-text">CupX Corporation</span>. All Rights Reserved.</p>
-        <p style="margin-top: 10px; font-size: 11px; color: #666;">
-            Disclaimer: This is a project simulation. No real financial transactions are processed here.
-        </p>
-    </footer>
+const { data } = await supabase
+.from("transactions")
+.select("*")
+.or(`from_user.eq.${userData.username},to_user.eq.${userData.username}`)
+.order("created_at",{ascending:false})
+.limit(10)
 
-</body>
+let html=""
+
+if(!data || data.length===0){
+html="No transactions yet"
+}
+
+data.forEach(tx=>{
+
+const credit = tx.to_user===userData.username
+
+html+=`
+<div class="transaction">
+<div>
+<div>${credit ? "Received" : "Sent"}</div>
+<div class="small">${new Date(tx.created_at).toLocaleString()}</div>
+</div>
+
+<div class="${credit ? "credit":"debit"}">
+${credit?"+":"-"} ₹${tx.amount}
+</div>
+
+</div>
+`
+
+})
+
+document.getElementById("transactions").innerHTML=html
+
+}
+
+function showSetPin(){
+document.getElementById("pinBox").style.display="block"
+}
+
+async function savePin(){
+
+const pin=document.getElementById("pin").value
+
+if(pin.length!=4){
+alert("PIN must be 4 digits")
+return
+}
+
+await supabase
+.from("users")
+.update({
+upi_pin: pin,
+upi_pin_updated_at:new Date()
+})
+.eq("id", userData.id)
+
+alert("UPI PIN updated")
+
+location.reload()
+
+}
+
+function logout(){
+localStorage.removeItem("cupx_session")
+location.href="https://auth.cupx.in"
+}
+
+init()
+
+</script></body>
 </html>
