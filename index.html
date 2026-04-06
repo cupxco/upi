@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI | CupX Corporation</title>
+    <style>
+        :root {
+            --npci-blue: #242D7A;
+            --upi-orange: #EF7102;
+            --upi-green: #018136;
+            --bg-light: #f4f7fa;
+            --text-dark: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: white;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            background: var(--npci-blue);
+            height: 5px;
+            width: 100%;
+        }
+
+        header {
+            padding: 15px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upi-brand {
+            font-size: 28px;
+            font-weight: 800;
+            font-style: italic;
+            color: var(--npci-blue);
+            letter-spacing: -1px;
+        }
+
+        .upi-brand span {
+            color: var(--upi-orange);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+            padding: 80px 10%;
+            text-align: center;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .upi-symbol {
+            width: 120px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: var(--npci-blue);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 40px;
+        }
+
+        /* Coming Soon Card */
+        .card {
+            background: white;
+            max-width: 600px;
+            margin: -60px auto 60px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid var(--upi-green);
+        }
+
+        .status-pill {
+            display: inline-block;
+            background: rgba(1, 129, 54, 0.1);
+            color: var(--upi-green);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .fast-forward {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .arrow {
+            width: 20px;
+            height: 20px;
+            transform: skewX(-20deg);
+        }
+
+        .orange { background: var(--upi-orange); }
+        .green { background: var(--upi-green); }
+
+        .btn-main {
+            background: var(--npci-blue);
+            color: white;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-main:hover {
+            background: #1a225c;
+            transform: translateY(-2px);
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 40px 10%;
+            background: white;
+        }
+
+        .f-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .f-item h3 {
+            color: var(--npci-blue);
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background: #222;
+            color: #ccc;
+            padding: 40px 10%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+
+        .highlight-text {
+            color: var(--upi-orange);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav"></div>
+    
+    <header>
+        <div class="logo-box">
+            <div class="upi-brand">U<span>PI</span></div>
+        </div>
+        <div style="font-size: 12px; color: #888; text-align: right;">
+            Powered by <br> <strong>CupX Corporation</strong>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="fast-forward">
+            <div class="arrow orange"></div>
+            <div class="arrow orange"></div>
+            <div class="arrow green"></div>
+        </div>
+        <h1>Unified Payments Interface</h1>
+        <p class="subtitle">Secure. Instant. Imaginary.</p>
+    </section>
+
+    <main>
+        <div class="card">
+            <span class="status-pill">System Deployment: In Progress</span>
+            <h2 style="margin-bottom: 15px;">A New Way to Pay (Mock)</h2>
+            <p style="margin-bottom: 30px; color: #666;">
+                We are building the backbone of the CupX economy. Soon, you'll be able to link your 
+                imaginary bank accounts and make lightning-fast payments across all our subdomains.
+            </p>
+            <a href="https://cupx.in" class="btn-main">Return to CupX Home</a>
+        </div>
+
+        <section class="features">
+            <div class="f-item">
+                <h3>Scan & Pay</h3>
+                <p>Support for mock QR codes across the CupX ecosystem.</p>
+            </div>
+            <div class="f-item">
+                <h3>24/7 Sandbox</h3>
+                <p>Always up, always ready for your testing and development.</p>
+            </div>
+            <div class="f-item">
+                <h3>Zero Cost</h3>
+                <p>No real money involved—perfect for your project simulation.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://cupx.in/about">About Us</a> | 
+            <a href="https://cupx.in/contact">Support</a> | 
+            <a href="#">Privacy Policy</a>
+        </div>
+        <p>© 2026 <span class="highlight-text">CupX Corporation</span>. All Rights Reserved.</p>
+        <p style="margin-top: 10px; font-size: 11px; color: #666;">
+            Disclaimer: This is a project simulation. No real financial transactions are processed here.
+        </p>
+    </footer>
+
+</body>
+</html>
