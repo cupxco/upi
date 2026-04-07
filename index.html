@@ -204,23 +204,37 @@ body {
 .wb-greeting { font-size: 13px; opacity: .8; margin-bottom: 2px; }
 .wb-name { font-family: 'Rajdhani', sans-serif; font-size: 23px; font-weight: 700; margin-bottom: 5px; }
 .wb-upi { font-size: 12px; opacity: .75; margin-bottom: 16px; background: rgba(255,255,255,0.12); display: inline-block; padding: 3px 10px; border-radius: 20px; }
-.wb-row { display: flex; align-items: center; justify-content: space-between; }
-.wb-bal-label { font-size: 12px; opacity: .8; margin-bottom: 3px; }
-.wb-bal-amt { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; }
-.eye-btn {
-  background: rgba(255,255,255,0.18);
-  border: none;
-  color: white;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  cursor: pointer;
+
+.wb-upi-box {
+  background: rgba(255,255,255,0.13);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  padding: 11px 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 16px;
+  justify-content: space-between;
+  cursor: pointer;
   transition: background .2s;
 }
-.eye-btn:hover { background: rgba(255,255,255,0.28); }
+.wb-upi-box:hover { background: rgba(255,255,255,0.2); }
+.wb-upi-box-label { font-size: 11px; opacity: .75; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .5px; }
+.wb-upi-box-id { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .3px; }
+.wb-copy-btn {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  color: white;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: background .15s;
+  font-family: 'Noto Sans', sans-serif;
+}
 
 /* Sections */
 .section-title {
@@ -557,12 +571,18 @@ body {
       <div class="wb-greeting">Welcome back,</div>
       <div class="wb-name" id="wbName">—</div>
       <div class="wb-upi" id="wbUpi">Loading…</div>
-      <div class="wb-row">
-        <div>
-          <div class="wb-bal-label">Account Balance</div>
-          <div class="wb-bal-amt" id="balDisplay">₹ ••••</div>
+      <div class="wb-upi-box" onclick="copyUpiId()">
+        <div class="wb-upi-box-left">
+          <div class="wb-upi-box-label">Your UPI ID</div>
+          <div class="wb-upi-box-id" id="wbUpiId">—</div>
         </div>
-        <button class="eye-btn" onclick="toggleBal()" id="eyeBtn">👁</button>
+        <div class="wb-copy-btn" id="wbCopyBtn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="white" stroke-width="1.5"/>
+            <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="wbCopyLbl">Copy</span>
+        </div>
       </div>
     </div>
 
@@ -690,7 +710,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
-let balVisible = false;
 let txnAll = [];
 let hasPin = false;
 let activeFilter = 'all';
@@ -772,29 +791,29 @@ async function showDash() {
 
   const name = currentUser.full_name || currentUser.username;
   document.getElementById('wbName').textContent = name;
-  document.getElementById('wbUpi').textContent = 'UPI ID: ' + currentUser.upi_id;
+  document.getElementById('wbUpi').textContent = '@' + currentUser.username;
+
+  document.getElementById('wbUpiId').textContent = currentUser.upi_id || '—';
 
   hasPin = !!(currentUser.upi_pin);
   document.getElementById('pinCardLbl').textContent = hasPin ? 'Change UPI PIN' : 'Set UPI PIN';
 
-  balVisible = false;
-  document.getElementById('balDisplay').textContent = '₹ ••••';
-  document.getElementById('eyeBtn').textContent = '👁';
-
   loadTxn();
 }
 
-// ── BALANCE ──
-function toggleBal() {
-  balVisible = !balVisible;
-  if (balVisible) {
-    const amt = parseFloat(currentUser.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-    document.getElementById('balDisplay').textContent = '₹ ' + amt;
-    document.getElementById('eyeBtn').textContent = '🙈';
-  } else {
-    document.getElementById('balDisplay').textContent = '₹ ••••';
-    document.getElementById('eyeBtn').textContent = '👁';
-  }
+// ── COPY UPI ID (banner box) ──
+function copyUpiId() {
+  const id = currentUser && currentUser.upi_id;
+  if (!id) return;
+  const lbl = document.getElementById('wbCopyLbl');
+  const cardLbl = document.getElementById('upiCopyLbl');
+  navigator.clipboard.writeText(id).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = id; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  if (lbl) { lbl.textContent = 'Copied!'; setTimeout(() => { lbl.textContent = 'Copy'; }, 2000); }
+  if (cardLbl) { cardLbl.textContent = 'Copied! ✓'; setTimeout(() => { cardLbl.textContent = 'My UPI ID'; }, 2000); }
 }
 
 // ── TRANSACTIONS ──
@@ -964,29 +983,7 @@ async function submitPin() {
   setTimeout(() => { document.getElementById('pinModal').classList.remove('open'); clearAllPins(); }, 1800);
 }
 
-// ── COPY UPI ID ──
-function copyUpiId() {
-  const upiId = currentUser.upi_id;
-  if (!upiId) return;
-  navigator.clipboard.writeText(upiId).then(() => {
-    const lbl = document.getElementById('upiCopyLbl');
-    lbl.textContent = 'Copied! ✓';
-    setTimeout(() => { lbl.textContent = 'My UPI ID'; }, 2000);
-  }).catch(() => {
-    // Fallback for older browsers
-    const ta = document.createElement('textarea');
-    ta.value = upiId;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    const lbl = document.getElementById('upiCopyLbl');
-    lbl.textContent = 'Copied! ✓';
-    setTimeout(() => { lbl.textContent = 'My UPI ID'; }, 2000);
-  });
-}
+
 
 // ── LOGOUT ──
 function logout() {
