@@ -573,9 +573,9 @@ body {
         <div class="action-icon ic-blue">🔑</div>
         <div class="action-label" id="pinCardLbl">Set UPI PIN</div>
       </div>
-      <div class="action-card" onclick="openCheckBal()">
-        <div class="action-icon ic-green">🏦</div>
-        <div class="action-label">Check Balance</div>
+      <div class="action-card" onclick="copyUpiId()">
+        <div class="action-icon ic-green">📋</div>
+        <div class="action-label" id="upiCopyLbl">My UPI ID</div>
       </div>
       <div class="action-card" onclick="window.location.href='https://pay.cupx.in'">
         <div class="action-icon ic-orange">💸</div>
@@ -680,26 +680,7 @@ body {
   </div>
 </div>
 
-<!-- CHECK BALANCE MODAL -->
-<div class="modal-overlay" id="balModal" onclick="closeModal('balModal',event)">
-  <div class="modal-sheet" onclick="event.stopPropagation()">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Check Balance</div>
-    <div class="modal-sub">Enter your UPI PIN to verify</div>
-    <div id="balErr" class="modal-err"></div>
-    <div id="balOk" class="modal-ok"></div>
-    <div class="pin-row">
-      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp0"/>
-      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp1"/>
-      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp2"/>
-      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp3"/>
-    </div>
-    <div class="modal-btn-row">
-      <button class="btn-sec" onclick="closeModal('balModal')">Close</button>
-      <button class="btn-mp" id="balBtn" onclick="checkBalance()">View Balance</button>
-    </div>
-  </div>
-</div>
+
 
 <script>
 // ── CONFIG — REPLACE THESE ──
@@ -897,12 +878,10 @@ function closeModal(id, e) {
 }
 
 function clearAllPins() {
-  ['np','cp','op','cn','cc','bp'].forEach(p => {
+  ['np','cp','op','cn','cc'].forEach(p => {
     for (let i=0;i<4;i++) { const el=document.getElementById(p+i); if(el) el.value=''; }
   });
   const pe = document.getElementById('pinErr'); if(pe) { pe.textContent=''; pe.style.color='var(--upi-danger)'; }
-  const be = document.getElementById('balErr'); if(be) be.textContent='';
-  const bo = document.getElementById('balOk'); if(bo) bo.textContent='';
 }
 
 function getPin(prefix) {
@@ -910,7 +889,7 @@ function getPin(prefix) {
 }
 
 // Setup auto-advance
-['np','cp','op','cn','cc','bp'].forEach(prefix => {
+['np','cp','op','cn','cc'].forEach(prefix => {
   for (let i=0;i<4;i++) {
     const el = document.getElementById(prefix+i);
     if (!el) continue;
@@ -985,42 +964,28 @@ async function submitPin() {
   setTimeout(() => { document.getElementById('pinModal').classList.remove('open'); clearAllPins(); }, 1800);
 }
 
-// ── CHECK BALANCE MODAL ──
-function openCheckBal() {
-  if (!hasPin) { alert('Please set your UPI PIN first.'); openPinModal(); return; }
-  clearAllPins();
-  document.getElementById('balModal').classList.add('open');
-  setTimeout(() => { const el=document.getElementById('bp0'); if(el) el.focus(); }, 320);
-}
-
-async function checkBalance() {
-  const pin = getPin('bp');
-  const errEl = document.getElementById('balErr');
-  const okEl = document.getElementById('balOk');
-  const btn = document.getElementById('balBtn');
-
-  errEl.textContent = ''; okEl.textContent = '';
-  if (pin.length < 4) { errEl.textContent = 'Enter your 4-digit UPI PIN'; return; }
-
-  btn.disabled = true; btn.textContent = 'Verifying…';
-
-  const { data } = await db.from('users').select('balance,upi_pin').eq('id', currentUser.id).single();
-
-  btn.disabled = false; btn.textContent = 'View Balance';
-
-  if (!data) { errEl.textContent = 'Could not fetch balance'; return; }
-  if (pin !== data.upi_pin) { errEl.textContent = 'Incorrect UPI PIN'; return; }
-
-  currentUser.balance = data.balance;
-  localStorage.setItem('cupx_user', JSON.stringify(currentUser));
-
-  const amt = parseFloat(data.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-  okEl.textContent = '✓ Available Balance: ₹' + amt;
-
-  // Also reveal on banner
-  balVisible = true;
-  document.getElementById('balDisplay').textContent = '₹ ' + amt;
-  document.getElementById('eyeBtn').textContent = '🙈';
+// ── COPY UPI ID ──
+function copyUpiId() {
+  const upiId = currentUser.upi_id;
+  if (!upiId) return;
+  navigator.clipboard.writeText(upiId).then(() => {
+    const lbl = document.getElementById('upiCopyLbl');
+    lbl.textContent = 'Copied! ✓';
+    setTimeout(() => { lbl.textContent = 'My UPI ID'; }, 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = upiId;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const lbl = document.getElementById('upiCopyLbl');
+    lbl.textContent = 'Copied! ✓';
+    setTimeout(() => { lbl.textContent = 'My UPI ID'; }, 2000);
+  });
 }
 
 // ── LOGOUT ──
