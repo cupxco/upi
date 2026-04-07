@@ -499,12 +499,10 @@ body {
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-left">
     <button class="back-btn" onclick="goBack()">&#8592;</button>
     <div class="header-brand">
-      <!-- UPI Logo SVG (tricolor >>) -->
       <svg height="30" viewBox="0 0 110 38" xmlns="http://www.w3.org/2000/svg">
         <rect width="110" height="38" fill="white" rx="5"/>
         <text x="7" y="27" font-family="Arial Black,sans-serif" font-size="20" font-weight="900" fill="#004C97">UPI</text>
@@ -518,7 +516,6 @@ body {
   <a href="https://cupx.in" class="visit-btn" target="_blank">CupX &#8599;</a>
 </header>
 
-<!-- SIGNIN SCREEN -->
 <div id="signinScreen">
   <div class="signin-card">
     <div class="signin-logo-area">
@@ -562,11 +559,8 @@ body {
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashScreen">
   <div class="main">
-
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
       <div class="wb-greeting">Welcome back,</div>
       <div class="wb-name" id="wbName">—</div>
@@ -586,7 +580,6 @@ body {
       </div>
     </div>
 
-    <!-- Manage UPI -->
     <div class="section-title">Manage UPI</div>
     <div class="actions-grid">
       <div class="action-card" onclick="openPinModal()">
@@ -607,7 +600,6 @@ body {
       </div>
     </div>
 
-    <!-- Mini Passbook -->
     <div class="section-title">Mini Passbook</div>
     <div class="passbook-card">
       <div class="pb-header">
@@ -642,7 +634,6 @@ body {
   </div>
 </div>
 
-<!-- PIN MODAL -->
 <div class="modal-overlay" id="pinModal" onclick="closeModal('pinModal',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -650,7 +641,6 @@ body {
     <div class="modal-sub" id="pinMSub">Choose a 4-digit PIN to secure your transactions</div>
     <div id="pinErr" class="modal-err"></div>
 
-    <!-- SET form (no existing pin) -->
     <div id="formSet">
       <div class="pin-section-label">New PIN</div>
       <div class="pin-row" id="rowNP">
@@ -668,7 +658,6 @@ body {
       </div>
     </div>
 
-    <!-- CHANGE form (has existing pin) -->
     <div id="formChange" style="display:none">
       <div class="pin-section-label">Current PIN</div>
       <div class="pin-row">
@@ -700,7 +689,25 @@ body {
   </div>
 </div>
 
-
+<div class="modal-overlay" id="balModal" onclick="closeModal('balModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Check Balance</div>
+    <div class="modal-sub">Enter your UPI PIN to view balance</div>
+    <div id="balErr" class="modal-err"></div>
+    <div id="balOk" class="modal-ok"></div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp0"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp1"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp2"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp3"/>
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn-sec" onclick="closeModal('balModal')">Close</button>
+      <button class="btn-mp" id="balBtn" onclick="checkBalance()">View Balance</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── CONFIG — REPLACE THESE ──
@@ -734,13 +741,11 @@ function showSignin() {
   document.getElementById('dashScreen').style.display = 'none';
 }
 
-// ── BACK BUTTON ──
 function goBack() {
   if (document.referrer) { history.back(); }
   else { window.location.href = 'https://cupx.in'; }
 }
 
-// ── TOGGLE PASSWORD ──
 function togglePw(id, btn) {
   const el = document.getElementById(id);
   const hidden = el.type === 'password';
@@ -748,7 +753,6 @@ function togglePw(id, btn) {
   btn.textContent = hidden ? 'Hide' : 'Show';
 }
 
-// ── SIGN IN ──
 document.getElementById('siUser').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('siPass').focus(); });
 document.getElementById('siPass').addEventListener('keydown', e => { if (e.key==='Enter') doSignin(); });
 
@@ -757,7 +761,6 @@ async function doSignin() {
   const p = document.getElementById('siPass').value;
   const errEl = document.getElementById('siErr');
   const btn = document.getElementById('siBtn');
-  const btnTxt = document.getElementById('siBtnTxt');
 
   errEl.textContent = '';
   if (!u || !p) { errEl.textContent = 'Please fill in all fields'; return; }
@@ -780,19 +783,16 @@ async function doSignin() {
   showDash();
 }
 
-// ── SHOW DASHBOARD ──
 async function showDash() {
   document.getElementById('signinScreen').style.display = 'none';
   document.getElementById('dashScreen').style.display = 'block';
 
-  // Refresh from DB
   const { data } = await db.from('users').select('*').eq('id', currentUser.id).single();
   if (data) { currentUser = data; localStorage.setItem('cupx_user', JSON.stringify(data)); }
 
   const name = currentUser.full_name || currentUser.username;
   document.getElementById('wbName').textContent = name;
   document.getElementById('wbUpi').textContent = '@' + currentUser.username;
-
   document.getElementById('wbUpiId').textContent = currentUser.upi_id || '—';
 
   hasPin = !!(currentUser.upi_pin);
@@ -801,25 +801,20 @@ async function showDash() {
   loadTxn();
 }
 
-// ── COPY UPI ID (banner box) ──
 function copyUpiId() {
   const id = currentUser && currentUser.upi_id;
   if (!id) return;
   const lbl = document.getElementById('wbCopyLbl');
-  const cardLbl = document.getElementById('upiCopyLbl');
   navigator.clipboard.writeText(id).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = id; ta.style.cssText = 'position:fixed;opacity:0';
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
   });
   if (lbl) { lbl.textContent = 'Copied!'; setTimeout(() => { lbl.textContent = 'Copy'; }, 2000); }
-  if (cardLbl) { cardLbl.textContent = 'Copied! ✓'; setTimeout(() => { cardLbl.textContent = 'My UPI ID'; }, 2000); }
 }
 
-// ── TRANSACTIONS ──
 async function loadTxn() {
   document.getElementById('txnList').innerHTML = '<div class="txn-loading"><div class="spinner"></div></div>';
-
   const { data, error } = await db
     .from('transactions')
     .select('*')
@@ -831,7 +826,6 @@ async function loadTxn() {
     document.getElementById('txnList').innerHTML = '<div class="txn-empty">⚠ Could not load transactions</div>';
     return;
   }
-
   txnAll = data;
   renderTxn();
 }
@@ -846,7 +840,6 @@ function filterTxn(f, btn) {
 function renderTxn() {
   const u = currentUser.username;
   let list = txnAll;
-
   if (activeFilter === 'credit') list = txnAll.filter(t => t.to_user === u && t.status !== 'pending');
   else if (activeFilter === 'debit') list = txnAll.filter(t => t.from_user === u && t.status !== 'pending');
   else if (activeFilter === 'pending') list = txnAll.filter(t => t.status === 'pending');
@@ -884,11 +877,9 @@ function renderTxn() {
       </div>
     </div>`;
   }).join('');
-
   document.getElementById('txnList').innerHTML = html;
 }
 
-// ── MODALS ──
 function closeModal(id, e) {
   if (!e || e.target === document.getElementById(id)) {
     document.getElementById(id).classList.remove('open');
@@ -897,7 +888,7 @@ function closeModal(id, e) {
 }
 
 function clearAllPins() {
-  ['np','cp','op','cn','cc'].forEach(p => {
+  ['np','cp','op','cn','cc','bp'].forEach(p => {
     for (let i=0;i<4;i++) { const el=document.getElementById(p+i); if(el) el.value=''; }
   });
   const pe = document.getElementById('pinErr'); if(pe) { pe.textContent=''; pe.style.color='var(--upi-danger)'; }
@@ -907,8 +898,7 @@ function getPin(prefix) {
   return [0,1,2,3].map(i => { const el=document.getElementById(prefix+i); return el?el.value:''; }).join('');
 }
 
-// Setup auto-advance
-['np','cp','op','cn','cc'].forEach(prefix => {
+['np','cp','op','cn','cc','bp'].forEach(prefix => {
   for (let i=0;i<4;i++) {
     const el = document.getElementById(prefix+i);
     if (!el) continue;
@@ -922,7 +912,6 @@ function getPin(prefix) {
   }
 });
 
-// ── PIN MODAL ──
 function openPinModal() {
   document.getElementById('pinMTitle').textContent = hasPin ? 'Change UPI PIN' : 'Set UPI PIN';
   document.getElementById('pinMSub').textContent = hasPin ? 'Enter your current PIN then choose a new one' : 'Choose a secure 4-digit PIN';
@@ -970,22 +959,92 @@ async function submitPin() {
 
   btn.disabled = false;
   btn.textContent = hasPin ? 'Update PIN' : 'Set PIN';
-
   if (error) { errEl.textContent = 'Error: ' + error.message; return; }
 
   currentUser = data;
   localStorage.setItem('cupx_user', JSON.stringify(data));
   hasPin = true;
   document.getElementById('pinCardLbl').textContent = 'Change UPI PIN';
-
   errEl.style.color = 'var(--upi-success)';
-  errEl.textContent = '✓ PIN ' + (hasPin ? 'updated' : 'set') + ' successfully!';
+  errEl.textContent = '✓ PIN updated successfully!';
   setTimeout(() => { document.getElementById('pinModal').classList.remove('open'); clearAllPins(); }, 1800);
 }
 
+function openCheckBal() {
+  if (!hasPin) {
+    alert('Please set your UPI PIN first.');
+    openPinModal();
+    return;
+  }
+  document.getElementById('balErr').textContent = '';
+  document.getElementById('balOk').textContent = '';
+  ['bp'].forEach(p => { for(let i=0;i<4;i++){const el=document.getElementById(p+i);if(el)el.value='';} });
+  document.getElementById('balModal').classList.add('open');
+  setTimeout(() => { const el=document.getElementById('bp0'); if(el) el.focus(); }, 320);
+}
 
+// Fixed Check Balance Function
+async function checkBalance() {
+  const pin = getPin('bp');
+  const errEl = document.getElementById('balErr');
+  const okEl = document.getElementById('balOk');
+  const btn = document.getElementById('balBtn');
 
-// ── LOGOUT ──
+  errEl.textContent = ''; 
+  okEl.textContent = '';
+
+  if (pin.length < 4) { 
+    errEl.textContent = 'Enter your 4-digit UPI PIN'; 
+    return; 
+  }
+
+  btn.disabled = true; 
+  btn.textContent = 'Verifying…';
+
+  try {
+    const { data, error } = await db
+      .from('users')
+      .select('balance, upi_pin')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (error) throw error;
+
+    if (!data) {
+      errEl.textContent = 'Error: Account not found.';
+      return;
+    }
+
+    // Strict string comparison for PIN
+    if (String(pin) !== String(data.upi_pin)) {
+      errEl.textContent = 'Incorrect UPI PIN';
+      // Clear inputs to allow retry
+      for(let i=0; i<4; i++) document.getElementById('bp'+i).value = '';
+      document.getElementById('bp0').focus();
+      return;
+    }
+
+    const balance = data.balance ?? 0;
+    const formattedAmt = parseFloat(balance).toLocaleString('en-IN', { 
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2 
+    });
+    
+    okEl.textContent = '✓ Available Balance: ₹' + formattedAmt;
+    
+    // Update local context
+    currentUser.balance = balance;
+    localStorage.setItem('cupx_user', JSON.stringify(currentUser));
+
+  } catch (err) {
+    console.error('Balance Error:', err);
+    errEl.textContent = 'System error. Please try again.';
+  } finally {
+    btn.disabled = false; 
+    btn.textContent = 'View Balance';
+  }
+}
+
 function logout() {
   if (confirm('Sign out of CupX UPI?')) {
     localStorage.removeItem('cupx_user');
