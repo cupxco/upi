@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 - Page Not Found | CupX UPI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root {
+  --upi-orange: #FF6B00;
+  --upi-green: #008744;
+  --upi-blue: #004C97;
+  --upi-light-blue: #0072CE;
+  --upi-bg: #F5F7FA;
+  --upi-card: #FFFFFF;
+  --upi-border: #E2E8F0;
+  --upi-text: #1E293B;
+  --upi-muted: #64748B;
+  --upi-success: #16A34A;
+  --upi-danger: #DC2626;
+  --upi-warning: #D97706;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  background: var(--upi-bg);
+  color: var(--upi-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER (Matches Index) */
+.header {
+  background: linear-gradient(135deg, #003A78 0%, #004C97 50%, #0060B8 100%);
+  color: white;
+  padding: 0 16px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 14px rgba(0,60,120,0.5);
+}
+
+.header-left { display: flex; align-items: center; gap: 10px; }
+
+.back-btn {
+  background: rgba(255,255,255,0.18);
+  border: none;
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,0.28); }
+
+.header-brand { display: flex; align-items: center; gap: 9px; }
+.header-title { font-family: 'Rajdhani', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 1px; }
+
+.visit-btn {
+  background: var(--upi-orange);
+  color: white;
+  border: none;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background .2s;
+  font-family: 'Noto Sans', sans-serif;
+  white-space: nowrap;
+}
+.visit-btn:hover { background: #E05900; }
+
+/* 404 CONTAINER */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.error-card {
+  background: white;
+  border-radius: 18px;
+  padding: 40px 26px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,76,151,0.13);
+  border: 1px solid var(--upi-border);
+  text-align: center;
+}
+
+.error-code {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 80px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--upi-blue), var(--upi-light-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.error-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--upi-text);
+  margin-bottom: 8px;
+}
+
+.error-desc {
+  font-size: 14px;
+  color: var(--upi-muted);
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+/* BUTTONS */
+.btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-primary, .btn-sec {
+  width: 100%;
+  height: 46px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all .2s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--upi-blue), var(--upi-light-blue));
+  color: white;
+  border: none;
+}
+.btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+
+.btn-sec {
+  background: white;
+  color: var(--upi-text);
+  border: 1.5px solid var(--upi-border);
+}
+.btn-sec:hover { background: #F1F5F9; }
+
+.footer-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 10px 10px;
+  font-size: 11px;
+  color: var(--upi-muted);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
+    <div class="header-brand">
+      <svg height="30" viewBox="0 0 110 38" xmlns="http://www.w3.org/2000/svg">
+        <rect width="110" height="38" fill="white" rx="5"/>
+        <text x="7" y="27" font-family="Arial Black,sans-serif" font-size="20" font-weight="900" fill="#004C97">UPI</text>
+        <path d="M68 8 L80 19 L68 30" stroke="#FF9933" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M76 8 L88 19 L76 30" stroke="#AAAAAA" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84 8 L96 19 L84 30" stroke="#138808" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="header-title">CUPX UPI</span>
+    </div>
+  </div>
+</header>
+
+<main class="error-container">
+  <div class="error-card">
+    <div class="error-code">404</div>
+    <div class="error-title">Payment Route Not Found</div>
+    <div class="error-desc">The page or transaction link you are looking for doesn't exist or has been moved.</div>
+    
+    <div class="btn-stack">
+      <button class="btn-sec" onclick="goBack()">&#8592; Go Back</button>
+      <a href="https://upi.cupx.in" class="btn-primary">🏠 Back to UPI Home</a>
+      <a href="https://cupx.in" class="btn-sec">🌐 Visit CupX Website</a>
+    </div>
+  </div>
+
+  <div class="footer-badge">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#004C97" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#138808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    CupX UPI &bull; Powered by NPCI Infrastructure
+  </div>
+</main>
+
+<script>
+  function goBack() {
+    if (document.referrer && !document.referrer.includes('404')) { 
+      history.back(); 
+    } else { 
+      window.location.href = 'https://upi.cupx.in'; 
+    }
+  }
+</script>
+</body>
+</html>
